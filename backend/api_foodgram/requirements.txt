@@ -16,6 +16,7 @@ django-templated-mail==1.1.1
 djangorestframework==3.12.4
 djangorestframework-simplejwt==4.8.0
 djoser==2.1.0
+gunicorn==20.0.4
 idna==3.3
 iniconfig==1.1.1
 itypes==1.2.0
@@ -26,6 +27,7 @@ packaging==21.3
 Pillow==9.1.1
 pluggy==0.13.1
 psycopg2==2.9.3
+psycopg2-binary==2.8.6
 py==1.11.0
 pycparser==2.21
 PyJWT==2.1.0

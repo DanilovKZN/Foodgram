@@ -1,13 +1,9 @@
-from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth import get_user_model
-
-from django.conf import settings
 
 from users.models import CustomUser
-
 
 
 def validate_hex(value):
@@ -44,13 +40,13 @@ class IngredientsAmount(models.Model):
     recipe = models.ForeignKey(
         'Recipe',
         on_delete=models.CASCADE,
-        related_name='ingredientsamount',
+        related_name='ingredientsamount_set',
         verbose_name='Рецепт'
     )
     ingredients = models.ForeignKey(
         Ingredients,
         on_delete=models.CASCADE,
-        related_name='ingredientsamount',
+        related_name='ingredientsamount_set',
         verbose_name='Ингредиент'
     )
     amount = models.IntegerField(
@@ -66,10 +62,6 @@ class IngredientsAmount(models.Model):
             )
         ]
     )
-
-    class Meta:
-        verbose_name = 'Количество ингредиента'
-        verbose_name_plural = 'Количество ингредиентов'
 
     def __str__(self):
         return (
@@ -126,7 +118,7 @@ class Recipe(models.Model):
         verbose_name='Изображение блюда'
     )
     description = models.TextField(verbose_name='Описание')
-    cooking_time = models.IntegerField(
+    cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления, мин.',
         validators=[
             MinValueValidator(

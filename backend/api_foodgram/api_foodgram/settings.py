@@ -7,13 +7,15 @@ load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = 'n6#vqal*rinl7%@(zk0h2f0nqx^ngyv*al14ye)wzg_du6yuj^'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ALLOWED_HOSTS = os.getenv(
+    'HOSTS',
+    '51.250.99.229, 127.0.0.1, localhost, web'
+).replace(" ", "").split(',')
 
 
 INSTALLED_APPS = [
@@ -110,8 +112,12 @@ USE_L10N = True
 USE_TZ = True
 
 
+STATIC_URL = '/back_static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'back_static')
 
-STATIC_URL = '/static/'
+MEDIA_URL = '/back_media/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'back_media')
+
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)
 
@@ -125,9 +131,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
-    # 'DEFAULT_FILTER_BACKENDS': [
-    #     'django_filters.rest_framework.DjangoFilterBackend'
-    # ],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 6,
 }

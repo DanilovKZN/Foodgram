@@ -1,15 +1,15 @@
-from django.urls import path, include, re_path
+from django.urls import include, path, re_path
+from djoser.views import TokenCreateView, TokenDestroyView
 from rest_framework import routers
-from djoser.views import TokenDestroyView, TokenCreateView
 
+from users.views import SubscriptionsList, UserViewSet
 
 from .views import (
     IngredientsViewSet,
-    TagViewSet,
     RecipesViewSet,
+    TagViewSet,
+    download_shopping_cart
 )
-
-from users.views import UserViewSet
 
 app_name = 'api'
 
@@ -26,5 +26,7 @@ urlpatterns = [
     re_path(r'^v1/auth/', include('djoser.urls')),
     path('v1/auth/token/login/', TokenCreateView.as_view(), name='login' ),
     path('v1/auth/token/logout/', TokenDestroyView.as_view(), name='logout'),
-    path('v1/', include(router_v1.urls)),
+    path('v1/users/subscriptions/', SubscriptionsList.as_view(), name='subsciptions'),
+    path('v1/recipes/download_shopping_cart/', download_shopping_cart, name='download_shopping_cart'),
+    path('v1/', include(router_v1.urls))
 ]

@@ -1,26 +1,14 @@
-from django.db import models
-from django.db.models import CharField, TextField, EmailField, BooleanField
-
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.validators import UnicodeUsernameValidator
-
 from django.core.validators import MinLengthValidator
-
-from django.contrib.auth import get_user_model
-
-
-
-class UsernameCharacterValidator(UnicodeUsernameValidator):
-    regex = r'^[\w.@+\-]+$'
+from django.db import models
+from django.db.models import BooleanField, CharField, EmailField
 
 
 class CustomUser(AbstractUser):
-    username_validator = UsernameCharacterValidator()
     email = EmailField(max_length=254, unique=True)
     username = CharField(
         max_length=150,
         unique=True,
-        validators=[username_validator]
     )
     first_name = CharField(max_length=150, blank=True)
     last_name = CharField(max_length=150, blank=True)
@@ -73,7 +61,7 @@ class Subscribe(models.Model):
         ]
 
     def __str__(self) -> str:
-        return f"{self.user.username} подписан на {self.following.username}"
+        return f"{self.user.username} подписан на {self.author.username}"
 
 
 class Favorites(models.Model):
@@ -115,8 +103,11 @@ class ShoppingCart(models.Model):
         related_name='shopping_cart',
         verbose_name='Пользователь',
     )
-    recipes = models.ManyToManyField(
+    recipe = models.ManyToManyField(
         'recipe.Recipe',
         related_name='in_shopping_cart',
         verbose_name='Рецепты',
     )
+
+    def __str__(self) -> str:
+        return f"{self.recipe.name} в избранном у {self.user.username}"

@@ -1,13 +1,11 @@
 from djoser.serializers import UserCreateSerializer
-
+from djoser.serializers import UserSerializer as DjoserUserSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from djoser.serializers import UserSerializer as DjoserUserSerializer
+from recipe.models import Recipe
 
 from .models import CustomUser, Subscribe
-
-from recipe.models import Recipe
 
 
 class UserSerializer(DjoserUserSerializer):
@@ -20,9 +18,6 @@ class UserSerializer(DjoserUserSerializer):
             'id', 'email', 'username', 'first_name', 'last_name',
             'is_subscribed',
         )
-        extra_kwargs = {
-            'password': {'write_only': True, 'required': True},
-        }
 
         validators = [
             UniqueTogetherValidator(
@@ -54,9 +49,9 @@ class SubscribeSerializer(serializers.ModelSerializer):
     first_name = serializers.ReadOnlyField(source='author.first_name')
     last_name = serializers.ReadOnlyField(source='author.last_name')
     is_subscribed = serializers.SerializerMethodField()
-    recipes_count = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
-
+    recipes_count = serializers.SerializerMethodField()
+    
     class Meta:
         fields = (
             'id', 'email', 'username', 'first_name', 
@@ -65,21 +60,26 @@ class SubscribeSerializer(serializers.ModelSerializer):
         model = Subscribe
 
     def get_is_subscribed(self, obj):
-        request_user = self.context.get('request').user.id
-        if (
+        request_user = self.context.get('request').user
+        presence = Subscribe.objects.filter(
+            author=obj.author,
+            user=request_user).exists()
+        return(
             request_user.is_authenticated and
-            obj.following.filter(user=request_user).exists()
-        ):
-            return True
-        return False
+            presence
+        )
 
     def get_recipes_count(self, obj):
         return obj.author.recipe.count()
     
     def get_recipes(self, obj):
-        queryset = Recipe.objects.filter(author=obj.author).all()
-        return queryset
-
+        recipes = RecipeFavoriteSerializer(
+            obj.author.recipe.all(),
+            many=True,
+            read_only=True
+        )
+        return recipes.data
+    
 
 class UsersCreateSerializer(UserCreateSerializer):
     class Meta(UserCreateSerializer.Meta):
@@ -99,4 +99,14 @@ class UsersCreateSerializer(UserCreateSerializer):
             password=validated_data['password']
         )
         user.save()
-        return user 
+        return user
+
+
+class RecipeFavoriteSerializer(serializers.ModelSerializer):
+    """
+    Для вывода рецептов подписчика.
+    Не работает, если находится в api.
+    """
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time',)
