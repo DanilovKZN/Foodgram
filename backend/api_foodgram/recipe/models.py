@@ -26,8 +26,9 @@ class Ingredients(models.Model):
         verbose_name='Единица измерения',
         max_length=30,
     )
+
     class Meta:
-        unique_together=['name', 'measurement_unit']
+        unique_together = ['name', 'measurement_unit']
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
 
@@ -83,7 +84,7 @@ class Tag(models.Model):
     class Meta:
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
-        
+
     def __str__(self):
         return self.slug
 
@@ -94,7 +95,7 @@ class Recipe(models.Model):
         Tag,
         blank=True,
         related_name='recipe_tag',
-        verbose_name = 'Теги'
+        verbose_name='Теги'
     )
     author = models.ForeignKey(
         CustomUser,
@@ -133,9 +134,9 @@ class Recipe(models.Model):
     )
     created = models.DateTimeField(
         auto_now_add=True,
-        verbose_name= 'Дата создания'
+        verbose_name='Дата создания'
     )
-    
+
     class Meta:
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'

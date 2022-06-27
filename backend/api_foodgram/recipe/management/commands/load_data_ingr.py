@@ -25,6 +25,10 @@ class Command(BaseCommand):
                         )
                 self.stdout.write(self.style.SUCCESS('Ingredients записан.'))
         except FileNotFoundError as error:
-            raise CommandError(f"Неудалось открыть файл Ingredients.csv. {error}")
+            raise CommandError(
+                f"Неудалось открыть файл Ingredients.csv. {error}"
+            )
         except Exception as error:
-            raise CommandError(f"Неудалось записать модель Ingredients. {error}")
+            raise CommandError(
+                f"Неудалось записать модель Ingredients. {error}"
+            )

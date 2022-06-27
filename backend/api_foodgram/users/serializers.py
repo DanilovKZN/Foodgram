@@ -25,12 +25,12 @@ class UserSerializer(DjoserUserSerializer):
                 fields=['username', 'email']
             )
         ]
-        
+
     def get_is_subscribed(self, obj):
         request_user = self.context['request'].user
         if (
-            request_user.is_authenticated and
-            obj.following.filter(user=request_user).exists()
+            request_user.is_authenticated
+            and obj.following.filter(user=request_user).exists()
         ):
             return True
         return False
@@ -43,6 +43,7 @@ class UserSerializer(DjoserUserSerializer):
 
 
 class SubscribeSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели Подписок."""
     email = serializers.ReadOnlyField(source='author.email')
     id = serializers.ReadOnlyField(source='author.id')
     username = serializers.ReadOnlyField(source='author.username')
@@ -51,10 +52,10 @@ class SubscribeSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
-    
+
     class Meta:
         fields = (
-            'id', 'email', 'username', 'first_name', 
+            'id', 'email', 'username', 'first_name',
             'last_name', 'is_subscribed', 'recipes', 'recipes_count'
         )
         model = Subscribe
@@ -65,13 +66,13 @@ class SubscribeSerializer(serializers.ModelSerializer):
             author=obj.author,
             user=request_user).exists()
         return(
-            request_user.is_authenticated and
-            presence
+            request_user.is_authenticated
+            and presence
         )
 
     def get_recipes_count(self, obj):
         return obj.author.recipe.count()
-    
+
     def get_recipes(self, obj):
         recipes = RecipeFavoriteSerializer(
             obj.author.recipe.all(),
@@ -79,9 +80,13 @@ class SubscribeSerializer(serializers.ModelSerializer):
             read_only=True
         )
         return recipes.data
-    
+
 
 class UsersCreateSerializer(UserCreateSerializer):
+    """
+    Отдельный сериализатор для создания
+    модели CustomUser.
+    """
     class Meta(UserCreateSerializer.Meta):
         fields = (
             'username',
@@ -90,6 +95,7 @@ class UsersCreateSerializer(UserCreateSerializer):
             'email',
             'password'
         )
+
     def create(self, validated_data):
         user = CustomUser(
             email=validated_data['email'],

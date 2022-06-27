@@ -21,4 +21,4 @@ class CustomUserAdmin(UserAdmin):
     list_filter = ('username', 'email',)
     list_editable = ('is_blocked',)
     empty_value_display = '-пусто-'
-    list_per_page=10
+    list_per_page = 10

@@ -8,19 +8,24 @@ from users.models import ShoppingCart
 from users.serializers import UserSerializer
 
 
+VAL_NOT_ZERO = 'Убедитесь, что значение количества ингредиента больше 0'
+
+
 class TagSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Tag."""
     color = serializers.CharField(source='hex_code')
+
     class Meta:
         fields = ('id', 'name', 'color', 'slug')
         model = Tag
 
     def validate_color(self, value):
-        if len(value) != 7 :
+        if len(value) != 7:
             raise serializers.ValidationError('Неверная длина поля!')
         elif value[0] != '#':
             raise serializers.ValidationError('Цвет должен начинаться с "#"')
         return value
+
 
 class IngredientSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Ingredient."""
@@ -58,7 +63,7 @@ class IngredientAmountCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = IngredientsAmount
         fields = ('id', 'amount',)
-    
+
     def get_amount(self, obj):
         return get_object_or_404(
             obj.ingredientsamount_set,
@@ -70,7 +75,11 @@ class RecipesListSerializer(serializers.ModelSerializer):
     """Сериализатор для просмотра модели Recipe."""
     tags = TagSerializer(many=True, read_only=True)
     author = UserSerializer(read_only=True)
-    ingredients = IngredientsAmountSerializer(many=True, read_only=True, source='ingredientsamount_set')
+    ingredients = IngredientsAmountSerializer(
+        many=True,
+        read_only=True,
+        source='ingredientsamount_set'
+    )
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
     text = serializers.CharField(source='description', read_only=True)
@@ -108,8 +117,9 @@ class RecipesListSerializer(serializers.ModelSerializer):
             return ShoppingCart.objects.filter(user=user, recipe=obj).exists()
         return False
 
+
 class RecipeCreateSerializer(serializers.ModelSerializer):
-    """Сериализатор для создания модели Recipe.""" 
+    """Сериализатор для создания/обновления модели Recipe."""
     author = serializers.SlugRelatedField(
         read_only=True, slug_field='username',
         default=serializers.CurrentUserDefault()
@@ -147,7 +157,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             value.ingredients.all(),
             many=True,
             read_only=True,
-            context={'id': value.id}).data
+            context={'id': value.id}
+        ).data
         return ingredient_list
 
     def create(self, validated_data):
@@ -160,8 +171,11 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         for recipe_ingredient in ingredients:
             IngredientsAmount.objects.create(
                 recipe=recipe,
-                ingredients = get_object_or_404(Ingredients, pk=recipe_ingredient['id']),
-                amount = recipe_ingredient['amount']
+                ingredients=get_object_or_404(
+                    Ingredients,
+                    pk=recipe_ingredient['id']
+                ),
+                amount=recipe_ingredient['amount']
             )
         return recipe
 
@@ -170,10 +184,22 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         instance.ingredients.clear()
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-        instance.name = validated_data.get('name', instance.name)
-        instance.image = validated_data.get('image', instance.image)
-        instance.description = validated_data.get('description', instance.description)
-        instance.cooking_time = validated_data.get('cooking_time', instance.cooking_time)
+        instance.name = validated_data.get(
+            'name',
+            instance.name
+        )
+        instance.image = validated_data.get(
+            'image',
+            instance.image
+        )
+        instance.description = validated_data.get(
+            'description',
+            instance.description
+        )
+        instance.cooking_time = validated_data.get(
+            'cooking_time',
+            instance.cooking_time
+        )
         instance.save()
         for tag in tags:
             current_tag = get_object_or_404(Tag, pk=tag.pk)
@@ -181,25 +207,39 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         for recipe_ingredient in ingredients:
             IngredientsAmount.objects.create(
                 recipe=Recipe.objects.get(pk=instance.pk),
-                ingredients = get_object_or_404(Ingredients, pk=recipe_ingredient['id']),
-                amount = recipe_ingredient['amount']
+                ingredients=get_object_or_404(
+                    Ingredients,
+                    pk=recipe_ingredient['id']
+                ),
+                amount=recipe_ingredient['amount']
             )
         return super().update(instance, validated_data)
 
     def validate(self, data):
         ingredients = self.initial_data.get('ingredients')
         if not ingredients:
-            raise serializers.ValidationError({
-                'ingredients': 'Нужен хотя бы один ингридиент для рецепта'})
+            raise serializers.ValidationError(
+                {
+                    'ingredients': 'Нужен хотя бы один ингридиент для рецепта'
+                }
+            )
         ingredient_list = []
         for ingredient_item in ingredients:
-            ingredient = get_object_or_404(Ingredients, id=ingredient_item['id'])
+            ingredient = get_object_or_404(
+                Ingredients,
+                id=ingredient_item['id']
+            )
             if ingredient in ingredient_list:
-                raise serializers.ValidationError('Ингридиенты должны быть уникальными')
+                raise serializers.ValidationError(
+                    'Ингридиенты должны быть уникальными'
+                )
             ingredient_list.append(ingredient)
             if int(ingredient_item['amount']) < 0:
-                raise serializers.ValidationError({
-                    'ingredients': ('Убедитесь, что значение количества ингредиента больше 0')})
+                raise serializers.ValidationError(
+                    {
+                        'ingredients': (VAL_NOT_ZERO)
+                    }
+                )
         data['ingredients'] = ingredients
         return data
 

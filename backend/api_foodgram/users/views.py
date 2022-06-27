@@ -14,6 +14,9 @@ from .permissions import IsAuthenOrAuthorOrAdminReadOnly
 from .serializers import SubscribeSerializer, UserSerializer
 
 
+SUB_ERROR = 'Вы уже подписаны или пытаетесь подписаться на самого себя'
+
+
 class UserViewSet(DjoserUserViewSet):
     """Вьюсет для работы с пользователями."""
     queryset = CustomUser.objects.all()
@@ -52,19 +55,27 @@ class UserViewSet(DjoserUserViewSet):
         """Проверяемся - подписываемся/отписываемся."""
         author = get_object_or_404(CustomUser, id=self.kwargs.get('id'))
         if request.method == "POST":
-            if_already_exists = Subscribe.objects.filter(author=author, user=request.user).exists()
+            if_already_exists = Subscribe.objects.filter(
+                author=author, user=request.user
+            ).exists()
             if if_already_exists or request.user == author:
                 return Response({
-                    'errors': 'Вы уже подписаны или пытаетесь подписаться на самого себя'
-                    }, status=status.HTTP_400_BAD_REQUEST
+                    'errors': SUB_ERROR},
+                    status=status.HTTP_400_BAD_REQUEST
                 )
-            new_subscribe = Subscribe.objects.create(author=author, user=request.user)
+            new_subscribe = Subscribe.objects.create(
+                author=author,
+                user=request.user
+            )
             serializer = SubscribeSerializer(
                 new_subscribe, context={'request': request}
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         if request.method == "DELETE":
-            our_subscribe = Subscribe.objects.filter(user=request.user, author=author)
+            our_subscribe = Subscribe.objects.filter(
+                user=request.user,
+                author=author
+            )
             if our_subscribe:
                 our_subscribe.delete()
                 return Response(

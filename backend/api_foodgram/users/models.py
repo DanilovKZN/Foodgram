@@ -5,6 +5,7 @@ from django.db.models import BooleanField, CharField, EmailField
 
 
 class CustomUser(AbstractUser):
+    """Кастомная модель пользователя."""
     email = EmailField(max_length=254, unique=True)
     username = CharField(
         max_length=150,
@@ -33,10 +34,11 @@ class CustomUser(AbstractUser):
             models.UniqueConstraint(
                 fields=('username', 'email'),
                 name='unique_email_for_username')
-        ]    
+        ]
 
 
 class Subscribe(models.Model):
+    """Модель подписок."""
     user = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,
