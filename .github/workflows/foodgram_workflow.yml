@@ -90,7 +90,7 @@ jobs:
           sudo docker-compose rm backend
           sudo docker-compose rm frontend
           sudo systemctl stop nginx
-          cd foodgram_project_react/
+          cd b/
           cd infra/
           sudo rm .env
           sudo touch .env
