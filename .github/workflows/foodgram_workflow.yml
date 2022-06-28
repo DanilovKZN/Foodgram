@@ -78,7 +78,7 @@ jobs:
         passphrase: ${{ secrets.PASSPHRASE }}
         key: ${{ secrets.SSH_KEY }}
         target: ${{ env.PROJECT_ROOT }}
-        source: 'infra/docker-compose.yaml, infra/nginx.conf'
+        source: 'infra/docker-compose.yml, infra/nginx.conf'
 
     - name: executing remote ssh commands to deploy
       uses: appleboy/ssh-action@master
@@ -94,7 +94,7 @@ jobs:
           sudo docker-compose rm backend
           sudo docker-compose rm frontend
           sudo systemctl stop nginx
-          ls
+          cd foodgram/
           cd infra/
           sudo rm .env
           sudo touch .env
