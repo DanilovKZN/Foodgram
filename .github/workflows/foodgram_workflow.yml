@@ -62,6 +62,8 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
+    env:
+      PROJECT_ROOT: ~/foodgram
     needs: build_and_push_to_docker_hub
     steps:
     - name: Check out the repo
@@ -74,6 +76,7 @@ jobs:
         username: ${{ secrets.USER }}
         passphrase: ${{ secrets.PASSPHRASE }}
         key: ${{ secrets.SSH_KEY }}
+        target: ${{ env.PROJECT_ROOT }}
         source: 'infra/docker-compose.yaml, infra/nginx/default.conf'
 
     - name: executing remote ssh commands to deploy
