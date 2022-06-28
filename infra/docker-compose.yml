@@ -16,7 +16,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    image: danilovkzn/foodgram_back:latest
+    image: danilovkzn/foodgram_backend:latest
     restart: always
     env_file:
       - ./.env
@@ -24,7 +24,7 @@ services:
   frontend:
     depends_on:
       - backend
-    image: danilovkzn/foodgram_front:latest
+    image: danilovkzn/foodgram_frontend:latest
     volumes:
       - ../frontend/:/app/result_build/
 
