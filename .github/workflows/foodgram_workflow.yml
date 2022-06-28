@@ -96,11 +96,11 @@ jobs:
           sudo systemctl stop nginx
           cd foodgram/
           cd infra/
-          sudo rm .env
-          sudo touch .env
-          sudo bash -c 'echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env'
-          sudo bash -c 'echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env'
-          sudo bash -c 'echo DB_NAME=${{ secrets.DB_NAME }} >> .env'
+          rm .env
+          touch .env
+          echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
+          echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
+          echo DB_NAME=${{ secrets.DB_NAME }} >> .env
           echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
           echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
           echo DB_HOST=${{ secrets.DB_HOST }} >> .env
