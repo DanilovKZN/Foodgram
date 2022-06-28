@@ -1,12 +1,10 @@
 from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
+from recipe.models import Ingredients, IngredientsAmount, Recipe, Tag
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-
-from recipe.models import Ingredients, IngredientsAmount, Recipe, Tag
 from users.models import ShoppingCart
 from users.serializers import UserSerializer
-
 
 VAL_NOT_ZERO = 'Убедитесь, что значение количества ингредиента больше 0'
 

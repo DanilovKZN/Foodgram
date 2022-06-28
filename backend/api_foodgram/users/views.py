@@ -1,3 +1,4 @@
+from api.pagination import LimitPageNumberPagination
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet as DjoserUserViewSet
@@ -7,12 +8,9 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from api.pagination import LimitPageNumberPagination
-
 from .models import CustomUser, Subscribe
 from .permissions import IsAuthenOrAuthorOrAdminReadOnly
 from .serializers import SubscribeSerializer, UserSerializer
-
 
 SUB_ERROR = 'Вы уже подписаны или пытаетесь подписаться на самого себя'
 

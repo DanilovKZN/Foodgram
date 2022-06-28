@@ -1,24 +1,19 @@
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework.backends import DjangoFilterBackend
+from recipe.models import Ingredients, Recipe, Tag
 from rest_framework import status, viewsets
 from rest_framework.decorators import action, api_view
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
-
-from recipe.models import Ingredients, Recipe, Tag
 from users.models import Favorites, ShoppingCart
 
 from .filters import RecipeFilter
 from .pagination import LimitPageNumberPagination
 from .permissions import IsAdminOnly, IsAuthorOrAdminReadOnly
-from .serializers import (
-    IngredientSerializer,
-    RecipeCreateSerializer,
-    RecipeFavoriteSerializer,
-    RecipesListSerializer,
-    TagSerializer
-)
+from .serializers import (IngredientSerializer, RecipeCreateSerializer,
+                          RecipeFavoriteSerializer, RecipesListSerializer,
+                          TagSerializer)
 
 FILE_NAME = 'shopping_cart.txt'
 KRISHA = """
