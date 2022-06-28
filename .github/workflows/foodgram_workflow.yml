@@ -55,7 +55,7 @@ jobs:
     - name: Build and push foodgram_frontend
       uses: docker/build-push-action@v2
       with:
-        context: ../../fronted
+        context: fronted/
         push: true
         no-cache: true
         tags: danilovkzn/foodgram_frontend:latest
