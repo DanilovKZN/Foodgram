@@ -23,9 +23,10 @@ jobs:
         pip install -r requirements.txt
         cd ..
 
-    - name: Test with flake8 and django tests
+    - name: Test with flake8
       run: |
         python -m flake8
+        cd ..
     
   build_and_push_to_docker_hub:
     name: Push Docker image to Docker Hub
@@ -77,7 +78,7 @@ jobs:
         passphrase: ${{ secrets.PASSPHRASE }}
         key: ${{ secrets.SSH_KEY }}
         target: ${{ env.PROJECT_ROOT }}
-        #source: 'infra/docker-compose.yaml, infra/nginx.conf'
+        source: 'infra/docker-compose.yaml, infra/nginx.conf'
 
     - name: executing remote ssh commands to deploy
       uses: appleboy/ssh-action@master
