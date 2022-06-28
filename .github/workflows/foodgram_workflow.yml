@@ -19,7 +19,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install flake8 pep8-naming flake8-broken-line flake8-return flake8-return flake8-isort
-        cd api_foodgram/
+        cd backend/api_foodgram/
         pip install -r requirements.txt
         cd ..
 
