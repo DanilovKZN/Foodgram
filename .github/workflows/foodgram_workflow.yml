@@ -94,6 +94,7 @@ jobs:
           sudo docker-compose rm backend
           sudo docker-compose rm frontend
           sudo systemctl stop nginx
+          ls
           cd infra/
           sudo rm .env
           sudo touch .env
