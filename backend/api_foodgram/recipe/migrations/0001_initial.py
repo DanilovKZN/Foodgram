@@ -2,8 +2,9 @@
 
 import django.core.validators
 import django.db.models.deletion
-import recipe.models
 from django.db import migrations, models
+
+import recipe.models
 
 
 class Migration(migrations.Migration):
