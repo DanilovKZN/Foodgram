@@ -27,7 +27,7 @@ POGREB = """
 
 class RecipesViewSet(viewsets.ModelViewSet):
     """Вьюсет для рецептов."""
-    queryset = Recipe.objects.all().order_by('-created')
+    queryset = Recipe.objects.all().order_by('-pk')
     permission_classes = (IsAuthorOrAdminReadOnly,)
     pagination_class = LimitPageNumberPagination
     filter_backends = (DjangoFilterBackend,)

@@ -132,10 +132,6 @@ class Recipe(models.Model):
             )
         ]
     )
-    created = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name='Дата создания'
-    )
 
     class Meta:
         verbose_name = 'Рецепт'

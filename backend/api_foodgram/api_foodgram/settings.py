@@ -118,7 +118,7 @@ MEDIA_URL = '/back_media/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'back_media')
 
 
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'back_static/'),)
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
