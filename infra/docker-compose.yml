@@ -20,7 +20,7 @@ services:
     restart: always
     volumes:
       - static_value:/foodgram/back_static/
-      - media_value:/foodgram/back_media/
+      - media_value:/foodgram/media/
     env_file:
       - ./.env
 
@@ -40,7 +40,7 @@ services:
       - ../frontend/build:/usr/share/nginx/html/
       - ../docs/:/usr/share/nginx/html/api/docs/
       - static_value:/var/html/back_static/
-      - media_value:/var/html/back_media/
+      - media_value:/var/html/media/
     depends_on:
       - frontend
 
