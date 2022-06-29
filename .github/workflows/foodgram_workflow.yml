@@ -51,7 +51,7 @@ jobs:
         context: backend/api_foodgram/
         push: true
         no-cache: true
-        tags: danilovkzn/foodgram_backend:latest
+        tags: danilovkzn/foodgram_backend:ver.1.0.8
     
     - name: Build and push foodgram_frontend
       uses: docker/build-push-action@v2
@@ -88,7 +88,7 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
-          sudo docker pull danilovkzn/foodgram_backend:ver.1.0.7
+          sudo docker pull danilovkzn/foodgram_backend:ver.1.0.8
           sudo docker pull danilovkzn/foodgram_frontend:latest
           sudo docker-compose stop
           sudo docker-compose rm backend

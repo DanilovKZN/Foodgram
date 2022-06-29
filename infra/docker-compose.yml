@@ -16,7 +16,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    image: danilovkzn/foodgram_backend:ver.1.0.7
+    image: danilovkzn/foodgram_backend:ver.1.0.8
     restart: always
     volumes:
       - static_value:/foodgram/back_static/
