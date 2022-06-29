@@ -48,4 +48,4 @@ volumes:
   static_value:
   media_value:
   postgres_data:
-  fronted_data:
+  frontend_data:
