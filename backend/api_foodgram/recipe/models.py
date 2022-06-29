@@ -18,7 +18,7 @@ def validate_hex(value):
 class Ingredients(models.Model):
     """Модель Ингредиентов."""
     name = models.CharField(
-        max_length=30,
+        max_length=100,
         verbose_name='Название ингредиента'
     )
     measurement_unit = models.CharField(

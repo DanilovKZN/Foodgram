@@ -81,17 +81,17 @@ class Favorites(models.Model):
         verbose_name='Рецепт'
     )
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['user', 'recipe'],
-                name='uning_fields'
-            ),
-            models.CheckConstraint(
-                check=~models.Q(user=models.F('recipe')),
-                name='prevent_follows'
-            )
-        ]
+    # class Meta:
+    #     constraints = [
+    #         models.UniqueConstraint(
+    #             fields=['user', 'recipe'],
+    #             name='uning_fields'
+    #         ),
+    #         models.CheckConstraint(
+    #             check=~models.Q(user=models.F('recipe')),
+    #             name='prevent_follows'
+    #         )
+    #     ]
 
     def __str__(self) -> str:
         return f"{self.following.username} в избранном у {self.user.username}"
