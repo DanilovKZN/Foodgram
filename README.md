@@ -29,7 +29,7 @@ services:
     env_file:
       - ./.env
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${DB_NAME}"]
       timeout: 10s
       interval: 1s
       retries: 10
@@ -38,17 +38,20 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    image: danilovkzn/foodgram_back:latest
+    image: danilovkzn/foodgram_backend:ver.1.0.8
     restart: always
+    volumes:
+      - static_value:/app/back_static/
+      - media_value:/app/media/
     env_file:
       - ./.env
 
   frontend:
     depends_on:
       - backend
-    image: danilovkzn/foodgram_front:latest
+    image: danilovkzn/foodgram_frontend:latest
     volumes:
-      - ../frontend/:/app/result_build/
+      - frontend_data:/app/result_build/
 
   nginx:
     image: nginx:1.19.3
@@ -56,10 +59,10 @@ services:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - ../frontend/build:/usr/share/nginx/html/
+      - frontend_data:/usr/share/nginx/html/
       - ../docs/:/usr/share/nginx/html/api/docs/
       - static_value:/var/html/back_static/
-      - media_value:/var/html/back_media/
+      - media_value:/var/html/media/
     depends_on:
       - frontend
 
@@ -67,6 +70,8 @@ volumes:
   static_value:
   media_value:
   postgres_data:
+  frontend_data:
+
 ```
 
 3.  В этой же директории создать папку nginx:
@@ -83,13 +88,13 @@ sudo touch default.conf
 server {
     listen 80;
 
-    server_name 51.250.99.229;
+    server_name 178.154.195.187;
 
     location /back_static/ {
         root /var/html/;
     }
 
-    location /back_media/ {
+    location /media/ {
         root /var/html/;
     }
 
@@ -98,11 +103,19 @@ server {
         try_files $uri $uri/redoc.html;
     }
 
+    location /static/admin/ {
+        root /var/html/static/;
+    }
+
+    location /static/rest_framework/ {
+        root /var/html/static/;
+    }
+
     location /api/ {
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-Host $host;
         proxy_set_header X-Forwarded-Server $host;
-        proxy_pass http://backend:8000;
+        proxy_pass http://backend:8000/api/;
     }
 
     location /admin/ {
@@ -111,7 +124,6 @@ server {
         proxy_set_header X-Forwarded-Server $host;
         proxy_pass http://backend:8000/admin/;
     }
-
 
     location / {
         root /usr/share/nginx/html;
@@ -130,6 +142,7 @@ server {
     server_tokens off;
 
 }
+
 
 ```
 
@@ -154,17 +167,13 @@ sudo docker pull danilovkzn/backend:latest
 sudo docker pull danilovkzn/frontend:latest
 sudo docker-compose up -d --build
 ```
-6. Зайти в контейнер web:
-```Shell
-sudo docker exec -it <CONTAINER_ID WEB> bash
-```
-7. Заполнить БД данными и создать пользователя:
+
+6. Заполнить БД данными и создать пользователя из папки, где расположен docker-compose файл:
 
 ```Shell
 sudo docker-compose exec backend python manage.py migrate
 sudo docker-compose exec backend python manage.py createsuperuser
 sudo docker-compose exec backend python manage.py collectstatic --no-input
-sudo docker-compose exec backend python manage.py loaddata fixtures.json
 sudo docker-compose exec backend python manage.py load_data_ingr
 ```
 
