@@ -28,12 +28,10 @@ class UserSerializer(DjoserUserSerializer):
 
     def get_is_subscribed(self, obj):
         request_user = self.context['request'].user
-        if (
+        return(
             request_user.is_authenticated
             and obj.following.filter(user=request_user).exists()
-        ):
-            return True
-        return False
+        )
 
     def create(self, validated_data):
         user = CustomUser(**validated_data)
@@ -51,7 +49,10 @@ class SubscribeSerializer(serializers.ModelSerializer):
     last_name = serializers.ReadOnlyField(source='author.last_name')
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.SerializerMethodField()
+    recipes_count = serializers.IntegerField(
+        source='author.recipe.count',
+        read_only=True
+    )
 
     class Meta:
         fields = (
@@ -69,9 +70,6 @@ class SubscribeSerializer(serializers.ModelSerializer):
             request_user.is_authenticated
             and presence
         )
-
-    def get_recipes_count(self, obj):
-        return obj.author.recipe.count()
 
     def get_recipes(self, obj):
         recipes = RecipeFavoriteSerializer(

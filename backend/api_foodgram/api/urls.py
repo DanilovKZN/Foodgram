@@ -4,8 +4,8 @@ from rest_framework import routers
 
 from users.views import SubscriptionsList, UserViewSet
 
-from .views import (IngredientsViewSet, RecipesViewSet, TagViewSet,
-                    download_shopping_cart)
+from .utils import download_shopping_cart
+from .views import IngredientsViewSet, RecipesViewSet, TagViewSet
 
 app_name = 'api'
 

@@ -12,8 +12,9 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = False
 
+
 ALLOWED_HOSTS = os.getenv(
-    'HOSTS'
+    'HOSTS',
 ).replace(" ", "").split(',')
 
 
@@ -76,14 +77,6 @@ DATABASES = {
 }
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
-
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -114,11 +107,9 @@ USE_TZ = True
 STATIC_URL = '/back_static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'back_static')
 
-MEDIA_URL = '/back_media/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'back_media')
+MEDIA_URL = '/media/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'media')
 
-
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'back_static/'),)
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
@@ -150,3 +141,5 @@ DJOSER = {
     },
     'HIDE_USERS': False
 }
+
+NUM_PAG_IN_PAGE = 6

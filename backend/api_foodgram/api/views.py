@@ -1,8 +1,7 @@
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework.backends import DjangoFilterBackend
 from rest_framework import status, viewsets
-from rest_framework.decorators import action, api_view
+from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 
@@ -15,14 +14,6 @@ from .permissions import IsAdminOnly, IsAuthorOrAdminReadOnly
 from .serializers import (IngredientSerializer, RecipeCreateSerializer,
                           RecipeFavoriteSerializer, RecipesListSerializer,
                           TagSerializer)
-
-FILE_NAME = 'shopping_cart.txt'
-KRISHA = """
-Для ваших кулинарных подвигов необходимо преобрести:\r\n
-"""
-POGREB = """
-\nУдачных покупок и вкусных блюд!
-"""
 
 
 class RecipesViewSet(viewsets.ModelViewSet):
@@ -78,31 +69,9 @@ class RecipesViewSet(viewsets.ModelViewSet):
     def favorite(self, request, pk=None):
         """Обработка избранного."""
         recipe = get_object_or_404(Recipe, pk=pk)
-        if request.method == 'POST':
-            try:
-                Favorites.objects.create(user=request.user, recipe=recipe)
-            except Exception:
-                return Response(
-                    {"Ошибка": "Рецепт уже есть в избранном!"},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            serializer = RecipeFavoriteSerializer(recipe)
-            return Response(
-                serializer.data,
-                status=status.HTTP_201_CREATED
-            )
-        recipe = Favorites.objects.filter(user=request.user, recipe=recipe)
-        if recipe:
-            recipe.delete()
-            return Response(
-                {"Оповещение": "Рецепт удален из избранного!"},
-                status=status.HTTP_204_NO_CONTENT
-            )
-        else:
-            return Response(
-                {"Ошибка": "Рецепта нет в избранном!"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        flag = 'Favorite'
+        data = [recipe]
+        return favorite_shop_card(flag, data, request)
 
     @action(
         methods=(['post', 'delete']),
@@ -115,30 +84,58 @@ class RecipesViewSet(viewsets.ModelViewSet):
         users_shopping_cart = ShoppingCart.objects.get_or_create(
             user=request.user
         )
-        if request.method == 'POST':
-            if users_shopping_cart[0].recipe.filter(
-                pk__in=(recipe.pk,)
-            ).exists():
+        flag = 'Shop'
+        data = [recipe, users_shopping_cart]
+        return favorite_shop_card(flag, data, request)
+
+
+def favorite_shop_card(flag, data, request):
+    """
+    Устранение дублирования кода для
+    Favorite и ShopCard
+    """
+    if request.method == 'POST':
+        if flag == 'Favorite':
+            try:
+                Favorites.objects.create(user=request.user, recipe=data[0])
+            except Exception:
+                return Response(
+                    {"Ошибка": "Рецепт уже есть в избранном!"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        else:
+            print(data[1])
+            if data[1][0].recipe.filter(pk__in=(data[0].pk,)).exists():
                 return Response(
                     {"Ошибка": "Рецепт уже есть в списке покупок!"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            users_shopping_cart[0].recipe.add(recipe)
-            serializer = RecipeFavoriteSerializer(recipe)
-            return Response(
-                serializer.data,
-                status=status.HTTP_201_CREATED
-            )
-        if users_shopping_cart[0].recipe.filter(pk__in=(recipe.pk,)).exists():
-            users_shopping_cart[0].recipe.remove(recipe)
-            return Response(
-                {"Оповещение": "Рецепт удален из списка покупок!"},
-                status=status.HTTP_204_NO_CONTENT
-            )
+            data[1][0].recipe.add(data[0])
+        serializer = RecipeFavoriteSerializer(data[0])
         return Response(
-            {"Ошибка": "Рецепта нет в списке покупок!"},
-            status=status.HTTP_400_BAD_REQUEST
+            serializer.data,
+            status=status.HTTP_201_CREATED
         )
+    else:
+        if flag == 'Favorite':
+            recipe = Favorites.objects.filter(user=request.user, recipe=data[0])
+            if recipe:
+                recipe.delete()
+                return Response(
+                    {"Оповещение": "Рецепт удален из избранного!"},
+                    status=status.HTTP_204_NO_CONTENT
+                )
+        else:
+            if data[1][0].recipe.filter(pk__in=(data[0].pk,)).exists():
+                data[1][0].recipe.remove(data[0])
+                return Response(
+                    {"Оповещение": "Рецепт удален из списка покупок!"},
+                    status=status.HTTP_204_NO_CONTENT
+                )
+            return Response(
+                {"Ошибка": "Рецепта нет!"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class IngredientsViewSet(viewsets.ModelViewSet):
@@ -159,47 +156,3 @@ class TagViewSet(viewsets.ModelViewSet):
     pagination_class = LimitPageNumberPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_field = ('slug',)
-
-
-@api_view(['GET'])
-def download_shopping_cart(request):
-    """Функция печати списка покупок."""
-    if not request.user.is_authenticated:
-        return Response(
-            {"Оповещение": "Авторизируйтесь, пожалуйста!"},
-            status=status.HTTP_401_UNAUTHORIZED
-        )
-    recipes = request.user.shopping_cart.recipe.prefetch_related('ingredients')
-    if not recipes:
-        return Response(
-            {"Оповещение": "Список покупок пуст!"},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-    name_ingredients = []
-    wight_ingredients = []
-    ingredients_to_write = {}
-    ingredients_for_download = ''
-    for recipe in recipes:
-        for i in recipe.ingredients.values():
-            name_ingredients.append([i['name'], i['measurement_unit']])
-        for i in recipe.ingredientsamount_set.values():
-            wight_ingredients.append(i['amount'])
-    for i in range(len(name_ingredients)):
-        name_ingredients[i].append(wight_ingredients[i])
-    for ingredient in name_ingredients:
-        if not ingredient[0] in ingredients_to_write:
-            ingredients_to_write[ingredient[0]] = [ingredient[1], ingredient[2]]
-        else:
-            ingredients_to_write[ingredient[0]][1] += ingredient[2]
-    for ingr_for_down in ingredients_to_write:
-        ingredients_for_download += (
-            f'{ingr_for_down}'
-            f' - {ingredients_to_write[ingr_for_down][1]}'
-            f'{ingredients_to_write[ingr_for_down][0]}.\r\n'
-        )
-    response = HttpResponse(
-        KRISHA + ingredients_for_download + POGREB,
-        content_type='text/plain,charset=utf8'
-    )
-    response['Content-Disposition'] = f'attachment; filename={FILE_NAME}'
-    return response

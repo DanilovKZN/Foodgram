@@ -28,7 +28,10 @@ class Ingredients(models.Model):
     )
 
     class Meta:
-        unique_together = ['name', 'measurement_unit']
+        models.UniqueConstraint(
+            fields=('name', 'measurement_unit',),
+            name='unique_ingredient'
+        )
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
 
@@ -134,6 +137,10 @@ class Recipe(models.Model):
     )
 
     class Meta:
+        models.UniqueConstraint(
+            fields=('author', 'name',),
+            name='unique_recipe'
+        )
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 

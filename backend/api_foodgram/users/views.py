@@ -1,3 +1,4 @@
+from api.pagination import LimitPageNumberPagination
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet as DjoserUserViewSet
@@ -6,8 +7,6 @@ from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
-from api.pagination import LimitPageNumberPagination
 
 from .models import CustomUser, Subscribe
 from .permissions import IsAuthenOrAuthorOrAdminReadOnly
@@ -95,4 +94,4 @@ class SubscriptionsList(ListAPIView):
     pagination_class = LimitPageNumberPagination
 
     def get_queryset(self):
-        return Subscribe.objects.filter(user=self.request.user)
+        return self.request.user.follower.all()
