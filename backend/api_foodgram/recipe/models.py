@@ -177,13 +177,7 @@ class Favorite(models.Model):
         verbose_name='Рецепты',
     )
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=('user', 'recipe',),
-                name='unique_recipe'),
-        ]
-
+    # models.UniqueConstraint нехочет ложиться на бд
     def __str__(self) -> str:
         return f"{self.recipe.name} в избранном у {self.user.username}"
 
@@ -202,12 +196,6 @@ class ShoppingCart(models.Model):
         verbose_name='Рецепты',
     )
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=('user', 'recipe',),
-                name='unique_recipe'),
-        ]
-
+    # models.UniqueConstraint нехочет ложиться на бд
     def __str__(self) -> str:
         return f"{self.recipe.name} в списке покупок у {self.user.username}"
