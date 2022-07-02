@@ -14,7 +14,7 @@ DEBUG = True
 
 
 ALLOWED_HOSTS = os.getenv(
-    'HOSTS',
+    'HOSTS'
 ).replace(" ", "").split(',')
 
 
@@ -68,7 +68,7 @@ WSGI_APPLICATION = 'api_foodgram.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE'),
-        'NAME': os.getenv('DB_NAME',),
+        'NAME': os.getenv('DB_NAME'),
         'USER': os.getenv('POSTGRES_USER'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
         'HOST': os.getenv('DB_HOST'),

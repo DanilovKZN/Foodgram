@@ -82,7 +82,12 @@ class IngredientsAmount(models.Model):
 class Tag(models.Model):
     """Модель тегов."""
     name = models.CharField(max_length=30, verbose_name='Название')
-    slug = models.CharField(max_length=30)
+    slug = models.SlugField(
+        'slug',
+        max_length=50,
+        unique=True,
+        db_index=True
+    )
     hex_code = models.CharField(
         validators=[validate_hex],
         verbose_name='Цвет в 16 системе',
@@ -172,7 +177,13 @@ class Favorite(models.Model):
         verbose_name='Рецепты',
     )
 
-    # UniqueConstraint удален из-за конфликта строк
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=('user', 'recipe',),
+                name='unique_recipe'),
+        ]
+
     def __str__(self) -> str:
         return f"{self.recipe.name} в избранном у {self.user.username}"
 
@@ -191,6 +202,12 @@ class ShoppingCart(models.Model):
         verbose_name='Рецепты',
     )
 
-    # UniqueConstraint удален из-за конфликта строк
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=('user', 'recipe',),
+                name='unique_recipe'),
+        ]
+
     def __str__(self) -> str:
         return f"{self.recipe.name} в списке покупок у {self.user.username}"
