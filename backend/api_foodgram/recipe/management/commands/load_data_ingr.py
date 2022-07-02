@@ -23,7 +23,7 @@ class Command(BaseCommand):
                             name=row[0],
                             measurement_unit=row[1]
                         )
-                self.stdout.write(self.style.SUCCESS('Ingredients записан.'))
+                self.stdout.write(self.style.SUCCESS('Ingredients saved.'))
         except FileNotFoundError as error:
             raise CommandError(
                 f"Неудалось открыть файл Ingredients.csv. {error}"

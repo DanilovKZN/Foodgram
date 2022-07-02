@@ -33,7 +33,11 @@ class CustomUser(AbstractUser):
         constraints = [
             models.UniqueConstraint(
                 fields=('username', 'email'),
-                name='unique_email_for_username')
+                name='unique_email_for_username'),
+            models.CheckConstraint(
+                check=~models.Q(username=models.F('email')),
+                name='user_not_email_again',
+            )
         ]
 
 
@@ -54,56 +58,13 @@ class Subscribe(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'author'],
-                name='uning_fields'
+                name='uning_fields_subscribe'
             ),
             models.CheckConstraint(
                 check=~models.Q(user=models.F('author')),
-                name='prevent_follows'
+                name='user_not_subscribe_author_again',
             )
         ]
 
     def __str__(self) -> str:
         return f"{self.user.username} подписан на {self.author.username}"
-
-
-class Favorites(models.Model):
-    """Модель Избранного."""
-    user = models.ForeignKey(
-        CustomUser,
-        on_delete=models.CASCADE,
-        related_name='in_favorite',
-        verbose_name='Пользователь'
-    )
-    recipe = models.ForeignKey(
-        'recipe.Recipe',
-        on_delete=models.CASCADE,
-        related_name='in_favorite',
-        verbose_name='Рецепт'
-    )
-
-    def __str__(self) -> str:
-        return f"{self.following.username} в избранном у {self.user.username}"
-
-
-class ShoppingCart(models.Model):
-    """Модель Список покупок."""
-    user = models.OneToOneField(
-        CustomUser,
-        on_delete=models.CASCADE,
-        related_name='shopping_cart',
-        verbose_name='Пользователь',
-    )
-    recipe = models.ManyToManyField(
-        'recipe.Recipe',
-        related_name='in_shopping_cart',
-        verbose_name='Рецепты',
-    )
-
-    class Meta:
-        models.UniqueConstraint(
-            fields=('user', 'recipe',),
-            name='unique_recipe'
-        )
-
-    def __str__(self) -> str:
-        return f"{self.recipe.name} в списке покупок у {self.user.username}"

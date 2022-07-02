@@ -1,15 +1,14 @@
-from api.pagination import LimitPageNumberPagination
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet as DjoserUserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
+from api.pagination import LimitPageNumberPagination
 from .models import CustomUser, Subscribe
-from .permissions import IsAuthenOrAuthorOrAdminReadOnly
 from .serializers import SubscribeSerializer, UserSerializer
 
 SUB_ERROR = 'Вы уже подписаны или пытаетесь подписаться на самого себя'
@@ -19,10 +18,16 @@ class UserViewSet(DjoserUserViewSet):
     """Вьюсет для работы с пользователями."""
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (IsAuthenOrAuthorOrAdminReadOnly,)
     pagination_class = LimitPageNumberPagination
     filter_backends = (DjangoFilterBackend,)
     search_fields = ['username']
+
+    def get_permissions(self):
+        if self.action in ('list', 'create'):
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
 
     @action(
         methods=('GET', 'PATCH',),

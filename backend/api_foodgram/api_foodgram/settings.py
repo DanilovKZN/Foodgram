@@ -10,7 +10,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 
-DEBUG = False
+DEBUG = True
 
 
 ALLOWED_HOSTS = os.getenv(
@@ -104,7 +104,7 @@ USE_L10N = True
 USE_TZ = True
 
 
-STATIC_URL = '/static/'
+STATIC_URL = '/back_static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
@@ -138,6 +138,7 @@ DJOSER = {
         'set_password': ['djoser.permissions.CurrentUserOrAdmin'],
         'user': ['rest_framework.permissions.AllowAny'],
         'user_list': ['rest_framework.permissions.AllowAny'],
+        'token_create': ['rest_framework.permissions.AllowAny'],
     },
     'HIDE_USERS': False
 }

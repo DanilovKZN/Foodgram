@@ -28,10 +28,15 @@ class Ingredients(models.Model):
     )
 
     class Meta:
-        models.UniqueConstraint(
-            fields=('name', 'measurement_unit',),
-            name='unique_ingredient'
-        )
+        constraints = [
+            models.UniqueConstraint(
+                fields=('name', 'measurement_unit',),
+                name='unique_ingredients'),
+            models.CheckConstraint(
+                check=~models.Q(name=models.F('measurement_unit')),
+                name='author_not_measurement_unit_again',
+            )
+        ]
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
 
@@ -130,19 +135,62 @@ class Recipe(models.Model):
                 message='Время приготовления не может быть <= 0.'
             ),
             MaxValueValidator(
-                1440,
-                message='Время приготовления не может быть больше суток.'
+                100000,
+                message='Длинные промежутки времени указывайте в описании.'
             )
         ]
     )
 
     class Meta:
-        models.UniqueConstraint(
-            fields=('author', 'name',),
-            name='unique_recipe'
-        )
+        constraints = [
+            models.UniqueConstraint(
+                fields=('author', 'name',),
+                name='unique_recipe'),
+            models.CheckConstraint(
+                check=~models.Q(author=models.F('name')),
+                name='author_not_recipe_again',
+            )
+        ]
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
     def __str__(self):
         return self.name
+
+
+class Favorite(models.Model):
+    """Модель Избранного."""
+    user = models.OneToOneField(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name='in_favorite',
+        verbose_name='Пользователь',
+    )
+    recipe = models.ManyToManyField(
+        Recipe,
+        related_name='in_favorite',
+        verbose_name='Рецепты',
+    )
+
+    # UniqueConstraint удален из-за конфликта строк
+    def __str__(self) -> str:
+        return f"{self.recipe.name} в избранном у {self.user.username}"
+
+
+class ShoppingCart(models.Model):
+    """Модель Список покупок."""
+    user = models.OneToOneField(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name='in_shopping_cart',
+        verbose_name='Пользователь',
+    )
+    recipe = models.ManyToManyField(
+        Recipe,
+        related_name='in_shopping_cart',
+        verbose_name='Рецепты',
+    )
+
+    # UniqueConstraint удален из-за конфликта строк
+    def __str__(self) -> str:
+        return f"{self.recipe.name} в списке покупок у {self.user.username}"

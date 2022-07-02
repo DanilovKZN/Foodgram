@@ -3,8 +3,8 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from recipe.models import Ingredients, IngredientsAmount, Recipe, Tag
-from users.models import ShoppingCart
+from recipe.models import (Favorite, Ingredients, IngredientsAmount, Recipe,
+                           ShoppingCart, Tag)
 from users.serializers import UserSerializer
 
 VAL_NOT_ZERO = 'Убедитесь, что значение количества ингредиента больше 0'
@@ -22,7 +22,7 @@ class TagSerializer(serializers.ModelSerializer):
     def validate_color(self, value):
         if len(value) != HEX_LEN_NUMBERS:
             raise serializers.ValidationError('Неверная длина поля!')
-        elif value[0] != '#':
+        if value[0] != '#':
             raise serializers.ValidationError('Цвет должен начинаться с "#"')
         return value
 
@@ -108,7 +108,7 @@ class RecipesListSerializer(serializers.ModelSerializer):
     def get_is_favorited(self, obj):
         user = self.context['request'].user
         if user.is_authenticated:
-            return user.in_favorite.filter(recipe=obj).exists()
+            return Favorite.objects.filter(user=user, recipe=obj).exists()
         return False
 
     def get_is_in_shopping_cart(self, obj):

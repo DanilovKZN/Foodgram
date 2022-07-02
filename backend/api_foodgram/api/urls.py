@@ -3,7 +3,6 @@ from djoser.views import TokenCreateView, TokenDestroyView
 from rest_framework import routers
 
 from users.views import SubscriptionsList, UserViewSet
-
 from .utils import download_shopping_cart
 from .views import IngredientsViewSet, RecipesViewSet, TagViewSet
 
@@ -12,14 +11,14 @@ app_name = 'api'
 router_v1 = routers.DefaultRouter()
 
 
-router_v1.register(r'recipes', RecipesViewSet, basename='recipes')
-router_v1.register(r'ingredients', IngredientsViewSet, basename='ingredients')
-router_v1.register(r'tags', TagViewSet, basename='tags')
-router_v1.register(r'users', UserViewSet, basename='users')
+router_v1.register('recipes', RecipesViewSet, basename='recipes')
+router_v1.register('ingredients', IngredientsViewSet, basename='ingredients')
+router_v1.register('tags', TagViewSet, basename='tags')
+router_v1.register('users', UserViewSet, basename='users')
 
 
 urlpatterns = [
-    re_path(r'^v1/auth/', include('djoser.urls')),
+    re_path('^v1/auth/', include('djoser.urls')),
     path('v1/auth/token/login/', TokenCreateView.as_view(), name='login'),
     path('v1/auth/token/logout/', TokenDestroyView.as_view(), name='logout'),
     path(

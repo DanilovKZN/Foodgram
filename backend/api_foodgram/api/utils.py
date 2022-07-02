@@ -20,7 +20,7 @@ def download_shopping_cart(request):
             {"Оповещение": "Авторизируйтесь, пожалуйста!"},
             status=status.HTTP_401_UNAUTHORIZED
         )
-    recipes = request.user.shopping_cart.recipe.prefetch_related('ingredients')
+    recipes = request.user.in_shopping_cart.recipe.prefetch_related('ingredients')
     if not recipes:
         return Response(
             {"Оповещение": "Список покупок пуст!"},
