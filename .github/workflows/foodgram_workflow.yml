@@ -106,6 +106,7 @@ jobs:
           # echo DB_HOST=${{ secrets.DB_HOST }} >> .env
           # echo DB_PORT=${{ secrets.DB_PORT }} >> .env
           # echo HOSTS=${{ secrets.HOSTS }} >> .env
+          # echo HOSTS=${{ secrets.DEBUG }} >> .env
           sudo docker-compose up -d --build
 
   send_message:

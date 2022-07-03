@@ -58,7 +58,7 @@ class IngredientsAmount(models.Model):
         related_name='ingredientsamount_set',
         verbose_name='Ингредиент'
     )
-    amount = models.IntegerField(
+    amount = models.PositiveIntegerField(
         verbose_name='Количество',
         validators=[
             MinValueValidator(
@@ -151,10 +151,6 @@ class Recipe(models.Model):
             models.UniqueConstraint(
                 fields=('author', 'name',),
                 name='unique_recipe'),
-            models.CheckConstraint(
-                check=~models.Q(author=models.F('name')),
-                name='author_not_recipe_again',
-            )
         ]
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
