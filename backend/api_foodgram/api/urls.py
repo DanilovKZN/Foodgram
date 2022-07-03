@@ -18,18 +18,18 @@ router_v1.register('users', UserViewSet, basename='users')
 
 
 urlpatterns = [
-    re_path('^v1/auth/', include('djoser.urls')),
-    path('v1/auth/token/login/', TokenCreateView.as_view(), name='login'),
-    path('v1/auth/token/logout/', TokenDestroyView.as_view(), name='logout'),
+    re_path('^auth/', include('djoser.urls')),
+    path('auth/token/login/', TokenCreateView.as_view(), name='login'),
+    path('auth/token/logout/', TokenDestroyView.as_view(), name='logout'),
     path(
-        'v1/users/subscriptions/',
+        'users/subscriptions/',
         SubscriptionsList.as_view(),
         name='subsciptions'
     ),
     path(
-        'v1/recipes/download_shopping_cart/',
+        'recipes/download_shopping_cart/',
         download_shopping_cart,
         name='download_shopping_cart'
     ),
-    path('v1/', include(router_v1.urls))
+    path('', include(router_v1.urls))
 ]
