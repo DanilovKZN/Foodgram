@@ -95,7 +95,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ru-ru'
 
-# TIME_ZONE = 'Europe/Moscow'
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
@@ -105,11 +104,11 @@ USE_L10N = True
 USE_TZ = True
 
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = '/back_static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'back_static')
 
-MEDIA_URL = '/media/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/back_media/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'back_media')
 
 
 AUTH_USER_MODEL = 'users.CustomUser'
