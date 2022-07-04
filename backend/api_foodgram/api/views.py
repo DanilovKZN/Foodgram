@@ -125,6 +125,8 @@ class IngredientsViewSet(viewsets.ModelViewSet):
     queryset = Ingredients.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (IsAdminOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_field = ('name',)
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -132,3 +134,5 @@ class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (IsAdminOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_field = ('slug',)
