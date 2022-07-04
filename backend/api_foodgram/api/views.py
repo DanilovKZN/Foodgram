@@ -124,10 +124,8 @@ class IngredientsViewSet(viewsets.ModelViewSet):
     """Вьюсет для ингредиентов."""
     queryset = Ingredients.objects.all()
     serializer_class = IngredientSerializer
-    filter_backends = (DjangoFilterBackend,)
-    filterset_field = ('name',)
     permission_classes = (IsAdminOnly,)
-    pagination_class = LimitPageNumberPagination
+    # pagination_class = LimitPageNumberPagination
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -135,6 +133,4 @@ class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (IsAdminOnly,)
-    pagination_class = LimitPageNumberPagination
-    filter_backends = (DjangoFilterBackend,)
-    filterset_field = ('slug',)
+    # pagination_class = LimitPageNumberPagination
