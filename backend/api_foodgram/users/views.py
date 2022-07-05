@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from api.pagination import LimitPageNumberPagination
 from .models import CustomUser, Subscribe
-from .serializers import SubscribeSerializer, UserSerializer
+from .serializers import SubscribeSerializer
 
 SUB_ERROR = 'Вы уже подписаны или пытаетесь подписаться на самого себя'
 
@@ -17,7 +17,6 @@ SUB_ERROR = 'Вы уже подписаны или пытаетесь подпи
 class UserViewSet(DjoserUserViewSet):
     """Вьюсет для работы с пользователями."""
     queryset = CustomUser.objects.all()
-    serializer_class = UserSerializer
     pagination_class = LimitPageNumberPagination
     filter_backends = (DjangoFilterBackend,)
     search_fields = ['username']

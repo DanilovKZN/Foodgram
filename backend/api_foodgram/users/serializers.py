@@ -7,7 +7,7 @@ from recipe.models import Recipe
 from .models import CustomUser, Subscribe
 
 
-class UserSerializer(DjoserUserSerializer):
+class UserSerializer(UserCreateSerializer):
     """Сериализатор для модели CustomUser."""
     is_subscribed = serializers.SerializerMethodField()
 
@@ -18,13 +18,6 @@ class UserSerializer(DjoserUserSerializer):
             'is_subscribed',
         )
 
-        validators = [
-            UniqueTogetherValidator(
-                queryset=CustomUser.objects.all(),
-                fields=['username', 'email']
-            )
-        ]
-
     def get_is_subscribed(self, obj):
         request_user = self.context['request'].user
         return(
@@ -33,7 +26,12 @@ class UserSerializer(DjoserUserSerializer):
         )
 
     def create(self, validated_data):
-        user = CustomUser(**validated_data)
+        user = CustomUser(
+            email=validated_data['email'],
+            username=validated_data['username'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
+        )
         user.set_password(validated_data['password'])
         user.save()
         return user
@@ -79,12 +77,13 @@ class SubscribeSerializer(serializers.ModelSerializer):
         return recipes.data
 
 
-class UsersCreateSerializer(UserCreateSerializer):
+class UsersCreateSerializer(DjoserUserSerializer):
     """
     Отдельный сериализатор для создания
     модели CustomUser.
     """
-    class Meta(UserCreateSerializer.Meta):
+    class Meta():
+        model = CustomUser
         fields = (
             'username',
             'first_name',
@@ -93,16 +92,12 @@ class UsersCreateSerializer(UserCreateSerializer):
             'password'
         )
 
-    def create(self, validated_data):
-        user = CustomUser(
-            email=validated_data['email'],
-            username=validated_data['username'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
-            password=validated_data['password']
-        )
-        user.save()
-        return user
+        validators = [
+            UniqueTogetherValidator(
+                queryset=CustomUser.objects.all(),
+                fields=['username', 'email']
+            )
+        ]
 
 
 class RecipeFavoriteSerializer(serializers.ModelSerializer):
