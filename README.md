@@ -29,7 +29,7 @@ services:
     env_file:
       - ./.env
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${DB_NAME}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       timeout: 10s
       interval: 1s
       retries: 10
@@ -41,7 +41,7 @@ services:
     image: danilovkzn/foodgram_backend:ver.1.0.8
     restart: always
     volumes:
-      - static_value:/app/back_static/
+      - static_value:/app/static/
       - media_value:/app/media/
     env_file:
       - ./.env
@@ -51,7 +51,7 @@ services:
       - backend
     image: danilovkzn/foodgram_frontend:latest
     volumes:
-      - frontend_data:/app/result_build/
+      - ../frontend/:/app/result_build/
 
   nginx:
     image: nginx:1.19.3
@@ -59,10 +59,11 @@ services:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - frontend_data:/usr/share/nginx/html/
+      - ../frontend/build:/usr/share/nginx/html/
       - ../docs/:/usr/share/nginx/html/api/docs/
-      - static_value:/var/html/back_static/
+      - static_value:/var/html/static/
       - media_value:/var/html/media/
+    restart: always  
     depends_on:
       - frontend
 
@@ -70,16 +71,13 @@ volumes:
   static_value:
   media_value:
   postgres_data:
-  frontend_data:
+  docs_value:
+
 
 ```
 
-3.  В этой же директории создать папку nginx:
-```Shell
-sudo mkdir nginx/
-cd nginx/
-```
-   В папке nginx создать файл конфигурации для nginx:
+3.  В этой же директории создать файл конфигурации для nginx:
+
 ```Shell
 sudo touch default.conf
 ```
@@ -88,13 +86,17 @@ sudo touch default.conf
 server {
     listen 80;
 
-    server_name 178.154.195.187;
+    server_name 178.154.195.187 foodhelper.ddns.net;
 
-    location /back_static/ {
+    location /media/ {
         root /var/html/;
     }
 
-    location /media/ {
+    location /static/admin/ {
+        root /var/html/;
+    }
+
+    location /static/rest_framework/ {
         root /var/html/;
     }
 
@@ -103,25 +105,17 @@ server {
         try_files $uri $uri/redoc.html;
     }
 
-    location /static/admin/ {
-        root /var/html/static/;
-    }
-
-    location /static/rest_framework/ {
-        root /var/html/static/;
-    }
-
     location /api/ {
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-Host $host;
-        proxy_set_header X-Forwarded-Server $host;
+        proxy_set_header        Host $host;
+        proxy_set_header        X-Real-IP $remote_addr;
+        proxy_set_header        X-Forwarded-Host $server_name;
         proxy_pass http://backend:8000/api/;
     }
 
     location /admin/ {
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-Host $host;
-        proxy_set_header X-Forwarded-Server $host;
+        proxy_set_header        Host $host;
+        proxy_set_header        X-Real-IP $remote_addr;
+        proxy_set_header        X-Forwarded-Host $server_name;
         proxy_pass http://backend:8000/admin/;
     }
 
@@ -132,17 +126,19 @@ server {
         proxy_set_header        Host $host;
         proxy_set_header        X-Real-IP $remote_addr;
         proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header        X-Forwarded-Host $server_name;
         proxy_set_header        X-Forwarded-Proto $scheme;
     }
-    error_page   500 502 503 504  /50x.html;
+
+    error_page 500 502 503 504 /50x.html;
+
     location = /50x.html {
-        root   /var/html/frontend/;
+        root /var/html/frontend/;
     }
 
     server_tokens off;
 
 }
-
 
 ```
 
@@ -156,13 +152,13 @@ POSTGRES_PASSWORD = 'Пароль'
 DB_HOST = 'Название кониейнера в docker-compose'
 DB_PORT = 'Порт для подключения к БД'
 HOSTS = 'IP сервера и внутренние адреса списком'
+DEBUG = 'Режим работы.'
 ```
 
 5. Собрать образы 
 ```Shell
 sudo docker-compose stop
 sudo docker-compose rm web
-sudo systemctl stop nginx
 sudo docker pull danilovkzn/backend:latest
 sudo docker pull danilovkzn/frontend:latest
 sudo docker-compose up -d --build
@@ -193,5 +189,5 @@ Gunicorn
 
 10. Ссылка на проект
 ```
-http://178.154.195.187/api/v1/
+http://178.154.195.187/
 ```

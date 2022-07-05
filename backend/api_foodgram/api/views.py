@@ -122,12 +122,15 @@ def favorite_shop_card(data, request, model):
 
 class IngredientsViewSet(viewsets.ModelViewSet):
     """Вьюсет для ингредиентов."""
-    queryset = Ingredients.objects.all()
+    # queryset = Ingredients.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (IsAdminOnly,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
-    filterset_field = ('name__startswith',)
+    filterset_field = ('name',)
     search_fields = ('name__startswith',)
+
+    def get_queryset(self):
+        return Ingredients.objects.filter('name__startswith')
 
 
 class TagViewSet(viewsets.ModelViewSet):
