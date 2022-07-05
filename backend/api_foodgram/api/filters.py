@@ -36,4 +36,6 @@ class IngredientsFilter(FilterSet):
         fields = ('name',)
 
     def search_ingredient(self, queryset, name, value):
-        return queryset.filter(name__istartswith=value)
+        if not value:
+            return queryset
+        return queryset.filter(name__startswith=value)
