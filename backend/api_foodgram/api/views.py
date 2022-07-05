@@ -6,7 +6,7 @@ from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 
 from recipe.models import Favorite, Ingredients, Recipe, ShoppingCart, Tag
-from .filters import RecipeFilter
+from .filters import RecipeFilter, IngredientsFilter
 from .pagination import LimitPageNumberPagination
 from .permissions import IsAdminOnly, IsAuthorOrAdminReadOnly
 from .serializers import (IngredientSerializer, RecipeCreateSerializer,
@@ -122,15 +122,12 @@ def favorite_shop_card(data, request, model):
 
 class IngredientsViewSet(viewsets.ModelViewSet):
     """Вьюсет для ингредиентов."""
-    # queryset = Ingredients.objects.all()
+    queryset = Ingredients.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (IsAdminOnly,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
-    filterset_field = ('name',)
+    filterset_class = IngredientsFilter
     search_fields = ('name__startswith',)
-
-    def get_queryset(self):
-        return Ingredients.objects.filter('name__startswith')
 
 
 class TagViewSet(viewsets.ModelViewSet):

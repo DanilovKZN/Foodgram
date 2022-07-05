@@ -1,6 +1,6 @@
 from django_filters.rest_framework import CharFilter, FilterSet, NumberFilter
 
-from recipe.models import Recipe
+from recipe.models import Recipe, Ingredients
 
 
 class RecipeFilter(FilterSet):
@@ -18,10 +18,22 @@ class RecipeFilter(FilterSet):
             return queryset.filter(in_favorite__user=self.request.user)
         return queryset
 
-    def filter_tags(self, queryset, name, tags):
-        return queryset.filter(tags__slug=tags)
+    def filter_tags(self, queryset, name, value):
+        return queryset.filter(tags__slug=value)
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
         if self.request.user.is_authenticated and value:
             return queryset.filter(in_shopping_cart__user=self.request.user.id)
         return queryset
+
+
+class IngredientsFilter(FilterSet):
+    """Фильтр для поиска ингредиентов."""
+    ingredient = CharFilter(method='search_ingredient')
+
+    class Meta:
+        model = Ingredients
+        fields = ('name',)
+
+    def search_ingredient(self, queryset, name, value):
+        return queryset.filter(name__istartswith=value)
