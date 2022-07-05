@@ -90,6 +90,8 @@ jobs:
         script: |
           sudo docker pull danilovkzn/foodgram_backend:ver.1.0.8
           sudo docker pull danilovkzn/foodgram_frontend:latest
+          cd foodgram/
+          cd infra/
           sudo docker-compose stop
           sudo docker-compose rm backend
           sudo docker-compose rm frontend
