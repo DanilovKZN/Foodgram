@@ -126,7 +126,7 @@ class IngredientsViewSet(viewsets.ModelViewSet):
     serializer_class = IngredientSerializer
     permission_classes = (IsAdminOnly,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
-    filterset_field = ('name',)
+    filterset_field = ('name__startswith',)
     search_fields = ('name__startswith',)
 
 
