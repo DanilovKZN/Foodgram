@@ -1,12 +1,12 @@
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework.backends import DjangoFilterBackend
-from rest_framework import status, viewsets
+from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 
 from recipe.models import Favorite, Ingredients, Recipe, ShoppingCart, Tag
-from .filters import RecipeFilter, IngredientsFilter
+from .filters import RecipeFilter
 from .pagination import LimitPageNumberPagination
 from .permissions import IsAdminOnly, IsAuthorOrAdminReadOnly
 from .serializers import (IngredientSerializer, RecipeCreateSerializer,
@@ -125,8 +125,9 @@ class IngredientsViewSet(viewsets.ModelViewSet):
     queryset = Ingredients.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (IsAdminOnly,)
-    filter_backends = (DjangoFilterBackend,)
-    filterset_class = IngredientsFilter
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    filterset_field = ('name',)
+    search_fields = ('name__startswith',)
 
 
 class TagViewSet(viewsets.ModelViewSet):
