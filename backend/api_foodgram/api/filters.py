@@ -39,6 +39,8 @@ class IngredientsFilter(FilterSet):
     def search_ingredient(self, queryset, name, value):
         if not value:
             return queryset
-        return queryset.filter(name__istartswith=value).annotate(
-                order=Value(0, IntegerField())
-            )
+        return queryset.filter(
+            name__istartswith=value
+        ).annotate(
+            order=Value(0, IntegerField())
+        )
