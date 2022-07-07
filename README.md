@@ -157,8 +157,6 @@ DEBUG = 'Режим работы.'
 
 5. Собрать образы 
 ```Shell
-sudo docker-compose stop
-sudo docker-compose rm web
 sudo docker pull danilovkzn/backend:latest
 sudo docker pull danilovkzn/frontend:latest
 sudo docker-compose up -d --build
