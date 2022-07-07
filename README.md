@@ -199,3 +199,9 @@ http://178.154.195.187/api/docs/
 ```
 http://178.154.195.187/
 ```
+
+12. Данные
+```
+Email: Admin@yandex.ru
+Password: kazan14alga
+```
