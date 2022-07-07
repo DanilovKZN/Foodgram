@@ -147,9 +147,3 @@ DJOSER = {
 
 
 NUM_PAG_IN_PAGE = 6
-
-
-CORS_ORIGIN_WHITELIST = (
-    'http://localhost:8000',
-    'http://178.154.195.187:8000',
-)

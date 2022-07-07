@@ -29,7 +29,7 @@ class RecipeFilter(FilterSet):
 
 class IngredientsFilter(FilterSet):
     """Фильтр для поиска ингредиентов."""
-    ingredient = CharFilter(method='search_ingredient')
+    name = CharFilter(method='search_ingredient')
 
     class Meta:
         model = Ingredients
@@ -37,7 +37,8 @@ class IngredientsFilter(FilterSet):
             'name': ['contains'],
         }
 
-    def search_ingredient(self, queryset, ingredient, value):
+    def search_ingredient(self, queryset, name, value):
+        print(value)
         if not value:
             return queryset
-        return queryset.filter(ingredient__startswith=value)
+        return queryset.filter(name__startswith=value)

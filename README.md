@@ -173,6 +173,8 @@ sudo docker-compose exec backend python manage.py collectstatic --no-input
 sudo docker-compose exec backend python manage.py load_data_ingr
 ```
 
+## Сайт:
+
 8. Технологии
 ```
 Python
@@ -181,13 +183,19 @@ Docker-compose
 Nginx
 Postgres
 Gunicorn
+Yandex.Cloud
 ```
-9. Автор
+
+9. Документация к API
+```
+http://178.154.195.187/api/docs/
+```
+10. Автор
 ```
 Данилов Николай
 ``` 
 
-10. Ссылка на проект
+11. Ссылка на проект
 ```
 http://178.154.195.187/
 ```
