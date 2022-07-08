@@ -7,7 +7,7 @@ from recipe.models import (Favorite, Ingredients, IngredientsAmount, Recipe,
                            ShoppingCart, Tag)
 from users.serializers import UserSerializer
 
-AMOUNT_VALIDATION = 'Вес не может быть меньше 0'
+
 COOKING_TIME_VALIDATION = 'Время не может быть меньше 0'
 VAL_NOT_ZERO = 'Убедитесь, что значение количества ингредиента больше 0'
 HEX_LEN_NUMBERS = 7
@@ -65,6 +65,13 @@ class IngredientAmountCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = IngredientsAmount
         fields = ('id', 'amount',)
+        extra_kwargs = {
+            'amount': {
+                'error_message': {
+                    'min_value': VAL_NOT_ZERO,
+                }
+            }
+        }
 
     def get_amount(self, obj):
         return get_object_or_404(
@@ -184,13 +191,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         )
         IngredientsAmount.objects.bulk_create(objects)
         return recipe
-
-    def validate(self, attrs):
-        for ingredient in attrs['ingredients']:
-            if ingredient['amount'] < 0:
-                raise serializers.ValidationError(AMOUNT_VALIDATION)
-        if attrs['cooking_time'] < 0:
-            raise serializers.ValidationError(COOKING_TIME_VALIDATION)
 
     def create(self, validated_data):
         data = {}

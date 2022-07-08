@@ -70,7 +70,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
 
     def get_recipes(self, obj):
         recipes = RecipeFavoriteSerializer(
-            obj.author.recipe.all(),
+            obj.author.recipe.all()[:3],
             many=True,
             read_only=True
         )
