@@ -7,6 +7,8 @@ from recipe.models import (Favorite, Ingredients, IngredientsAmount, Recipe,
                            ShoppingCart, Tag)
 from users.serializers import UserSerializer
 
+AMOUNT_VALIDATION = 'Вес не может быть меньше 0'
+COOKING_TIME_VALIDATION = 'Время не может быть меньше 0'
 VAL_NOT_ZERO = 'Убедитесь, что значение количества ингредиента больше 0'
 HEX_LEN_NUMBERS = 7
 
@@ -183,6 +185,13 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         IngredientsAmount.objects.bulk_create(objects)
         return recipe
 
+    def validate(self, attrs):
+        for ingredient in attrs['ingredients']:
+            if ingredient['amount'] < 0:
+                raise serializers.ValidationError(AMOUNT_VALIDATION)
+        if attrs['cooking_time'] < 0:
+            raise serializers.ValidationError(COOKING_TIME_VALIDATION)
+
     def create(self, validated_data):
         data = {}
         data['tags'] = validated_data.pop('tags')
@@ -218,7 +227,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         if not ingredients:
             raise serializers.ValidationError(
                 {
-                    'ingredients': 'Нужен хотя бы один ингридиент для рецепта'
+                    'ingredients': 'Нужен хотя бы один ингредиент для рецепта'
                 }
             )
         ingr_set = set()
@@ -232,7 +241,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 )
         if len(ingr_set) < len(ingredients):
             raise serializers.ValidationError(
-                'Ингридиенты должны быть уникальными'
+                'Ингредиенты должны быть уникальными'
             )
         data['ingredients'] = ingredients
         return data

@@ -6,8 +6,8 @@ from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 
 from recipe.models import Favorite, Ingredients, Recipe, ShoppingCart, Tag
-from .filters import RecipeFilter, IngredientsFilter
-from .pagination import LimitPageNumberPagination
+from .filters import IngredientsFilter, RecipeFilter
+from .pagination import LimitPageNumberPagination, LimitFollowNumberPagination
 from .permissions import IsAdminOnly, IsAuthorOrAdminReadOnly
 from .serializers import (IngredientSerializer, RecipeCreateSerializer,
                           RecipeFavoriteSerializer, RecipesListSerializer,
@@ -62,7 +62,8 @@ class RecipesViewSet(viewsets.ModelViewSet):
     @action(
         methods=(['post', 'delete']),
         detail=True,
-        permission_classes=(IsAuthenticated,)
+        permission_classes=(IsAuthenticated,),
+        pagination_class=LimitFollowNumberPagination
     )
     def favorite(self, request, pk=None):
         """Обработка избранного."""
