@@ -1,5 +1,5 @@
 asgiref==3.5.2
-atomicwrites==1.4.0
+atomicwrites
 attrs==21.4.0
 certifi==2022.5.18.1
 cffi==1.15.0
