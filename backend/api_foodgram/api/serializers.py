@@ -10,6 +10,7 @@ from users.serializers import UserSerializer
 
 COOKING_TIME_VALIDATION = 'Время не может быть меньше 0'
 VAL_NOT_ZERO = 'Убедитесь, что значение количества ингредиента больше 0'
+VAL_NOT_INT = 'Убедитесь, что значение ингредиента число.'
 HEX_LEN_NUMBERS = 7
 
 
@@ -233,10 +234,17 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         ingr_set = set()
         for ingredient_item in ingredients:
             ingr_set.add(ingredient_item['id'])
-            if int(ingredient_item['amount']) < 0:
+            try:
+                if int(ingredient_item['amount']) <= 0:
+                    raise serializers.ValidationError(
+                        {
+                            'ingredients': (VAL_NOT_ZERO)
+                        }
+                    )
+            except Exception:
                 raise serializers.ValidationError(
                     {
-                        'ingredients': (VAL_NOT_ZERO)
+                        'ingredients': (VAL_NOT_INT)
                     }
                 )
         if len(ingr_set) < len(ingredients):
