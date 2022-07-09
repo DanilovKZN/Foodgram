@@ -5,6 +5,14 @@ from .models import Ingredients, IngredientsAmount, Recipe, Tag
 
 class RecipeIngredientsInline(admin.TabularInline):
     model = IngredientsAmount
+    min_num = 1
+    extra = 0
+
+
+class RecipeTagsInline(admin.TabularInline):
+    model = Tag
+    min_num = 1
+    extra = 0
 
 
 @admin.register(Recipe)
@@ -13,7 +21,7 @@ class RecipesAdmin(admin.ModelAdmin):
     list_filter = ('name', 'author', 'tags',)
     empty_value_display = '-пусто-'
     list_per_page = 10
-    inlines = [RecipeIngredientsInline]
+    inlines = [RecipeIngredientsInline, RecipeTagsInline]
 
     def recipes_in_favorites(self, obj):
         return obj.in_favorite.count()

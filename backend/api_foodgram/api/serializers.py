@@ -72,7 +72,7 @@ class IngredientAmountCreateSerializer(serializers.ModelSerializer):
             obj.ingredientsamount_set,
             ingredients_id=obj.id, recipe_id=self.context.get('id')
         ).amount
-        if amount_inngr <= 0:
+        if int(amount_inngr) <= 0:
             raise serializers.ValidationError(VAL_NOT_ZERO)
         return amount_inngr
 

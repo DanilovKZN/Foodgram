@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -61,10 +61,6 @@ class IngredientsAmount(models.Model):
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество',
         validators=[
-            RegexValidator(
-                regex='^-',
-                message='Минимальное количество не может быть < 0.'
-            ),
             MinValueValidator(
                 0,
                 message='Минимальное количество не может быть < 0.'
