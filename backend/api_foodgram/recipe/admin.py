@@ -9,12 +9,6 @@ class RecipeIngredientsInline(admin.TabularInline):
     extra = 0
 
 
-class RecipeTagsInline(admin.TabularInline):
-    model = Tag
-    min_num = 1
-    extra = 0
-
-
 @admin.register(Recipe)
 class RecipesAdmin(admin.ModelAdmin):
     list_display = ('pk', 'name', 'author', 'recipes_in_favorites')
@@ -44,7 +38,6 @@ class TagsAdmin(admin.ModelAdmin):
     search_fields = ('name', 'slug',)
     empty_value_display = '-пусто-'
     list_per_page = 10
-    inlines = [RecipeTagsInline]
 
 
 @admin.register(IngredientsAmount)
