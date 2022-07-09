@@ -61,7 +61,7 @@ class IngredientsAmountSerializer(serializers.ModelSerializer):
 
 class IngredientAmountCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для записи ингредиента, входящего в рецепт."""
-    amount = serializers.SerializerMethodField()
+    amount = serializers.SerializerMethodField(error_messages={'Ошибка': VAL_NOT_ZERO})
 
     class Meta:
         model = IngredientsAmount
@@ -136,7 +136,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         many=True,
         queryset=Tag.objects.all(),
     )
-    ingredients = serializers.SerializerMethodField()
+    ingredients = serializers.SerializerMethodField(error_messages={'Ошибка': VAL_NOT_ZERO})
     image = Base64ImageField()
     text = serializers.CharField(source='description')
 
