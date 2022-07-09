@@ -63,7 +63,7 @@ class IngredientsAmount(models.Model):
         validators=[
             MinValueValidator(
                 0,
-                message='Минимальное количество не может быть <= 0.'
+                message='Минимальное количество не может быть < 0.'
             ),
             MaxValueValidator(
                 100_000,
@@ -137,7 +137,7 @@ class Recipe(models.Model):
         validators=[
             MinValueValidator(
                 0,
-                message='Время приготовления не может быть <= 0.'
+                message='Время приготовления не может быть < 0.'
             ),
             MaxValueValidator(
                 100_000,

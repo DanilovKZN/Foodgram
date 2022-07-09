@@ -66,13 +66,13 @@ class IngredientAmountCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = IngredientsAmount
         fields = ('id', 'amount',)
-        extra_kwargs = {
-            'amount': {
-                'error_message': {
-                    'min_value': VAL_NOT_ZERO,
-                }
-            }
-        }
+        # extra_kwargs = {
+        #     'amount': {
+        #         'error_message': {
+        #             'min_value': VAL_NOT_ZERO,
+        #         }
+        #     }
+        # }
 
     def get_amount(self, obj):
         return get_object_or_404(
@@ -234,19 +234,19 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         ingr_set = set()
         for ingredient_item in ingredients:
             ingr_set.add(ingredient_item['id'])
-            try:
-                if int(ingredient_item['amount']) <= 0:
-                    raise serializers.ValidationError(
-                        {
-                            'ingredients': (VAL_NOT_ZERO)
-                        }
-                    )
-            except Exception:
-                raise serializers.ValidationError(
-                    {
-                        'ingredients': (VAL_NOT_INT)
-                    }
-                )
+            # try:
+            #     if int(ingredient_item['amount']) <= 0:
+            #         raise serializers.ValidationError(
+            #             {
+            #                 'ingredients': (VAL_NOT_ZERO)
+            #             }
+            #         )
+            # except Exception:
+            #     raise serializers.ValidationError(
+            #         {
+            #             'ingredients': (VAL_NOT_INT)
+            #         }
+            #     )
         if len(ingr_set) < len(ingredients):
             raise serializers.ValidationError(
                 'Ингредиенты должны быть уникальными'
