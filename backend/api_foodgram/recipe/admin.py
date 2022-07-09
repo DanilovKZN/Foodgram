@@ -21,7 +21,7 @@ class RecipesAdmin(admin.ModelAdmin):
     list_filter = ('name', 'author', 'tags',)
     empty_value_display = '-пусто-'
     list_per_page = 10
-    inlines = [RecipeIngredientsInline, RecipeTagsInline]
+    inlines = [RecipeIngredientsInline]
 
     def recipes_in_favorites(self, obj):
         return obj.in_favorite.count()
@@ -44,6 +44,7 @@ class TagsAdmin(admin.ModelAdmin):
     search_fields = ('name', 'slug',)
     empty_value_display = '-пусто-'
     list_per_page = 10
+    inlines = [RecipeTagsInline]
 
 
 @admin.register(IngredientsAmount)
