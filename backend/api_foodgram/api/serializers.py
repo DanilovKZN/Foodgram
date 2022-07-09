@@ -66,13 +66,6 @@ class IngredientAmountCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = IngredientsAmount
         fields = ('id', 'amount',)
-        # extra_kwargs = {
-        #     'amount': {
-        #         'error_messages': {
-        #             'min_value': VAL_NOT_ZERO,
-        #         }
-        #     }
-        # }
 
     def get_amount(self, obj):
         amount_inngr = get_object_or_404(
