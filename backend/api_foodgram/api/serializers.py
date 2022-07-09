@@ -68,17 +68,20 @@ class IngredientAmountCreateSerializer(serializers.ModelSerializer):
         fields = ('id', 'amount',)
         # extra_kwargs = {
         #     'amount': {
-        #         'error_message': {
+        #         'error_messages': {
         #             'min_value': VAL_NOT_ZERO,
         #         }
         #     }
         # }
 
     def get_amount(self, obj):
-        return get_object_or_404(
+        amount_inngr = get_object_or_404(
             obj.ingredientsamount_set,
             ingredients_id=obj.id, recipe_id=self.context.get('id')
         ).amount
+        if amount_inngr <= 0:
+            raise serializers.ValidationError(VAL_NOT_ZERO)
+        return amount_inngr
 
 
 class RecipesListSerializer(serializers.ModelSerializer):
@@ -234,19 +237,19 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         ingr_set = set()
         for ingredient_item in ingredients:
             ingr_set.add(ingredient_item['id'])
-            # try:
-            #     if int(ingredient_item['amount']) <= 0:
-            #         raise serializers.ValidationError(
-            #             {
-            #                 'ingredients': (VAL_NOT_ZERO)
-            #             }
-            #         )
-            # except Exception:
-            #     raise serializers.ValidationError(
-            #         {
-            #             'ingredients': (VAL_NOT_INT)
-            #         }
-            #     )
+            try:
+                if int(ingredient_item['amount']) <= 0:
+                    raise serializers.ValidationError(
+                        {
+                            'ingredients': (VAL_NOT_ZERO)
+                        }
+                    )
+            except Exception:
+                raise serializers.ValidationError(
+                    {
+                        'ingredients': (VAL_NOT_INT)
+                    }
+                )
         if len(ingr_set) < len(ingredients):
             raise serializers.ValidationError(
                 'Ингредиенты должны быть уникальными'
