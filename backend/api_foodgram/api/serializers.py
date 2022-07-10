@@ -240,7 +240,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             except Exception:
                 raise serializers.ValidationError(
                     {
-                        'ingredients': VAL_NOT_INT
+                        'ingredients': ingredient_item['amount'][0]
                     }
                 )
         if len(ingr_set) < len(ingredients):
