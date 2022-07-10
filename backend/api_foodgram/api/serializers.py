@@ -231,16 +231,16 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         for ingredient_item in ingredients:
             ingr_set.add(ingredient_item['id'])
             try:
-                if ingredient_item['amount'][0] == '-':
+                if int(ingredient_item['amount']) < 0:
                     raise serializers.ValidationError(
                         {
                             'ingredients': (VAL_NOT_ZERO)
                         }
                     )
-            except Exception:
+            except Exception as error:
                 raise serializers.ValidationError(
                     {
-                        'ingredients': ingredient_item['amount'][0]
+                        'ingredients': error
                     }
                 )
         if len(ingr_set) < len(ingredients):
