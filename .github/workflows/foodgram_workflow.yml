@@ -88,8 +88,8 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
-          # sudo docker pull danilovkzn/foodgram_backend:ver.1.0.8
-          # sudo docker pull danilovkzn/foodgram_frontend:latest
+          sudo docker pull danilovkzn/foodgram_backend:ver.1.0.8
+          sudo docker pull danilovkzn/foodgram_frontend:latest
           cd foodgram/
           cd infra/
           sudo docker-compose stop
